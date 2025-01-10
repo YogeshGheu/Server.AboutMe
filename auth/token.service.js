@@ -5,6 +5,7 @@ const generateRefreshToken = function (payload) {
 		throw new Error("Payload is required for generating the refresh token");
 	const refreshTokenData = {
 		username: payload.username,
+		role: payload.role,
 		email: payload.email,
 		phone: payload.phone,
 	};
@@ -33,7 +34,8 @@ const generateAccessToken = function (payload) {
 	if (!payload)
 		throw new Error("Payload is required for generating the access token");
 	const accessTokenData = {
-		username: payload.username
+		username: payload.username,
+		role: payload.role,
 	};
 	try {
 		return jwt.sign(accessTokenData, process.env.ACCESS_TOKEN_SECRET, {

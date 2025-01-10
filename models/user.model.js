@@ -14,8 +14,9 @@ const userSchema = mongoose.Schema(
 		},
 		username: {
 			type: String,
+			unique:true,
 			required: true,
-			unique: true,
+
 		},
 		password: {
 			type: String,
@@ -49,6 +50,14 @@ const userSchema = mongoose.Schema(
 		refreshToken: {
 			type: String,
 			unique: true,
+			required: false,
+		},
+		otp: {
+			type: String,
+			required: false,
+		},
+		otpExpiryTime: {
+			type: Date,
 			required: false,
 		},
 	},

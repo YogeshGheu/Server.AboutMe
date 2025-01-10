@@ -1,9 +1,12 @@
 import express from "express";
-import { createUser } from "../controllers/user.controller.js";
+import { collectUserDataAndSendOtp, verifyOtpAndCreateUser, loginUser, logoutUser } from "../controllers/user.controller.js";
 
 const userRouter = express.Router();
 
-userRouter.route("/create").post(createUser);
+userRouter.route("/data/collect").post(collectUserDataAndSendOtp);
+userRouter.route("/verify/create").post(verifyOtpAndCreateUser);
+userRouter.route("/login").post(loginUser);
+userRouter.route("/logout").post(logoutUser);
 
 
 export { userRouter };
