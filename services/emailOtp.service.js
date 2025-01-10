@@ -7,7 +7,7 @@ import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const sendOtp = async function (to, OTP, type = "set" || "reset") {
+const sendOtp = async function (to, OTP, validForMinutes, type = "set" || "reset") {
     sgMail.setApiKey(process.env.TWILIO_SENDGRID_API_KEY);
 	const from = process.env.TWILIO_SENDGRID_SENDER_EMAIL;
 
@@ -21,13 +21,15 @@ const sendOtp = async function (to, OTP, type = "set" || "reset") {
 			.readFileSync(templatePath)
 			.toString()
 			.replace("123456", OTP)
-			.replace("xxxxxmessagexxxxx", setPassText);
+			.replace("xxxxxmessagexxxxx", setPassText)
+			.replace("validForMinutes", validForMinutes);
 	} else if (type == "reset") {
 		htmlContent = fs
 			.readFileSync(templatePath)
 			.toString()
 			.replace("123456", OTP)
-			.replace("xxxxxmessagexxxxx", resetPassText);
+			.replace("xxxxxmessagexxxxx", resetPassText)
+			.replace("validForMinutes", validForMinutes);;
 	}
 
 	const msg = {

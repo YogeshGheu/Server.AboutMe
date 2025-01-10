@@ -10,6 +10,7 @@ import { TempOTP } from "../models/tempOtp.model.js";
 import { sendOtp } from "../services/emailOtp.service.js";
 
 const collectUserDataAndSendOtp = async function (req, res) {
+
 	if (
 		!req.body.firstName ||
 		!req.body.lastName ||
@@ -46,11 +47,11 @@ const collectUserDataAndSendOtp = async function (req, res) {
 		}
 		return OTP;
 	};
-
+	const validForMinutes = 3
 	const OTP = generateOTP();
-	const otpExpiryTime = new Date(Date.now() + 11 * 60 * 1000); // 11 minutes from now - sending 10 minutes in mail
+	const otpExpiryTime = new Date(Date.now() + validForMinutes * 60 * 1000); // 11 minutes from now - sending 10 minutes in mail
 
-	await sendOtp(email, OTP, "set"); // send OTP email for verification
+	await sendOtp(email, OTP, validForMinutes, "set"); // send OTP email for verification
 
 	try {
 		await TempOTP.create({
@@ -63,7 +64,12 @@ const collectUserDataAndSendOtp = async function (req, res) {
 			message: "please verify the otp",
 		});
 	} catch (error) {
-		return ApiError(res, 500, "internal server error - please try after 10 minutes", error);
+		return ApiError(
+			res,
+			500,
+			"internal server error - please try after 10 minutes",
+			error
+		);
 	}
 };
 
@@ -72,12 +78,12 @@ const verifyOtpAndCreateUser = async function (req, res) {
 	if (!otp) {
 		return ApiError(res, 400, "bad request - OTP object missing");
 	}
-	
+
 	let tempOTPData;
 
 	try {
 		tempOTPData = await TempOTP.findOne({
-			otp
+			otp,
 		});
 
 		if (!tempOTPData) {
@@ -90,7 +96,8 @@ const verifyOtpAndCreateUser = async function (req, res) {
 		return ApiError(res, 500, "internal server error!", error);
 	}
 
-	const { firstName, lastName, username, password, email, phone } = tempOTPData.userData;
+	const { firstName, lastName, username, password, email, phone } =
+		tempOTPData.userData;
 
 	try {
 		const user = await User.create({
@@ -101,11 +108,11 @@ const verifyOtpAndCreateUser = async function (req, res) {
 			email,
 			phone,
 			isActive: true,
-			isVerified:true,
+			isVerified: true,
 		});
 
 		if (user) {
-			await TempOTP.deleteOne({otp})
+			await TempOTP.deleteOne({ otp });
 			return res.status(201).json({
 				code: 201,
 				status: "ok",
