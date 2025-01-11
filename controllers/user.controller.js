@@ -49,7 +49,7 @@ const collectUserDataAndSendOtp = async function (req, res) {
 	};
 	const validForMinutes = 3
 	const OTP = generateOTP();
-	const otpExpiryTime = new Date(Date.now() + validForMinutes * 60 * 1000); // 11 minutes from now - sending 10 minutes in mail
+	const otpExpiryTime = new Date(Date.now() + validForMinutes * 60 * 1000); 
 
 	await sendOtp(email, OTP, validForMinutes, "set"); // send OTP email for verification
 
