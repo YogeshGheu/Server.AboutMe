@@ -19,8 +19,8 @@ const DB_URL = process.env.DB_URL;
 connectDB(DB_URL);
 
 // using routes
-app.use("/api/user", userRouter);
-app.use("/user/youtube", youTubeRouter)
+app.use("/app/api/user", userRouter);
+app.use("/app/user/youtube", youTubeRouter)
 
 // requests
 app.get("/", async (req, res) => {
