@@ -1,6 +1,6 @@
 const ApiError = (res, statusCode = 500, message = "Internal Server Error", error=null) => {
 	const err = {
-		statusCode,
+		status:statusCode,
 		message,
         error
 	};
