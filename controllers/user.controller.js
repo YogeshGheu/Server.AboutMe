@@ -185,11 +185,11 @@ const loginUser = async function (req, res) {
 const logoutUser = async function (req, res) {
 	const date = new Date(); // current date/time
 
-	res.cookie("refreshToken", "b", {
+	res.cookie("refreshToken", "_", {
 		httpOnly: true,
 		expires: date,
 	});
-	res.cookie("accessToken", "b", {
+	res.cookie("accessToken", "_", {
 		httpOnly: true,
 		expires: date,
 	});
