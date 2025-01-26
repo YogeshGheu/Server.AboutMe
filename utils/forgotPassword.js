@@ -14,7 +14,7 @@ const sendForgotPasswordOtp = async function (req, res) {
 		if (!user) {
 			return res.status(200).json({
 				// sending a fake response for security reasons
-				status: "ok",
+				status: 200,
 				message: "otp is sent to the registered email",
 			});
 		}
@@ -41,10 +41,11 @@ const sendForgotPasswordOtp = async function (req, res) {
 
 		// sending the OTP email to the user
 		const userEmail = user.email;
+		// console.log(userEmail)
 		await sendOtp(userEmail, OTP, validForMinutes, "reset");
 
 		return res.status(200).json({
-			status: "ok",
+			status: 200,
 			message: "otp is sent to the registered email",
 		});
 	} catch (error) {
@@ -73,7 +74,7 @@ const verifyForgotPasswordOtp = async function (req, res) {
 		await user.save()
 
 		return res.status(200).json({
-			status:"ok",
+			status:200,
 			message:"password reset successful"
 		})
 

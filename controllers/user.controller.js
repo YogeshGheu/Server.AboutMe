@@ -10,7 +10,6 @@ import { TempOTP } from "../models/tempOtp.model.js";
 import { sendOtp } from "../services/emailOtp.service.js";
 
 const collectUserDataAndSendOtp = async function (req, res) {
-
 	if (
 		!req.body.firstName ||
 		!req.body.lastName ||
@@ -47,9 +46,9 @@ const collectUserDataAndSendOtp = async function (req, res) {
 		}
 		return OTP;
 	};
-	const validForMinutes = 3
+	const validForMinutes = 3;
 	const OTP = generateOTP();
-	const otpExpiryTime = new Date(Date.now() + validForMinutes * 60 * 1000); 
+	const otpExpiryTime = new Date(Date.now() + validForMinutes * 60 * 1000);
 
 	await sendOtp(email, OTP, validForMinutes, "set"); // send OTP email for verification
 
@@ -60,7 +59,7 @@ const collectUserDataAndSendOtp = async function (req, res) {
 			userData: { firstName, lastName, username, password, email, phone },
 		});
 		return res.status(200).json({
-			status: "ok",
+			status: 200,
 			message: "please verify the otp",
 		});
 	} catch (error) {
@@ -114,8 +113,7 @@ const verifyOtpAndCreateUser = async function (req, res) {
 		if (user) {
 			await TempOTP.deleteOne({ otp });
 			return res.status(201).json({
-				code: 201,
-				status: "ok",
+				status: 201,
 				message: "user is created successfully",
 				data: {
 					id: user._id,
@@ -173,7 +171,7 @@ const loginUser = async function (req, res) {
 		});
 
 		return res.status(200).json({
-			status: "ok",
+			status: 200,
 			message: "user is logged in",
 		});
 	} catch (error) {
@@ -198,6 +196,14 @@ const logoutUser = async function (req, res) {
 		status: "ok",
 		message: "used logged out!",
 	});
+};
+
+const getUser = async (req, res) => {
+	try {
+		
+	} catch (error) {
+		ApiError(res, 500, "internal server error")
+	}
 };
 
 export {
