@@ -7,12 +7,19 @@ import { userRouter } from "./routers/user.router.js";
 import { sendOtp } from "./services/emailOtp.service.js";
 import axios from "axios";
 import {youTubeRouter} from "./routers/youTube.router.js"
+import cookieParser from "cookie-parser";
+import { verifyToken } from "./middlewares/verifyToken.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // enable JSON body parsing
 app.use(express.json());
+
+// enable cookie parsing
+app.use(cookieParser())
+
+app.use("/app/user/youtube", verifyToken)
 
 // connect the app to DB
 const DB_URL = process.env.DB_URL;

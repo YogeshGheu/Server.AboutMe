@@ -44,7 +44,7 @@ const generateAccessToken = function (payload) {
 		});
 	} catch (error) {
 		console.error("Error generating the access token: ", error.message);
-		throw new Error("Failed to generate access token");
+		// throw new Error("Failed to generate access token");
 	}
 };
 
@@ -54,7 +54,6 @@ const verifyAccessToken = function (token) {
 		return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 	} catch (error) {
 		console.error("Error decoding the access token!", error.message);
-		throw new Error("Failed to verify the access token!");
 	}
 };
 

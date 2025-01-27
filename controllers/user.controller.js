@@ -195,14 +195,28 @@ const logoutUser = async function (req, res) {
 	res.status(200).json({
 		status: "ok",
 		message: "used logged out!",
-	});
+	}); 
 };
 
 const getUser = async (req, res) => {
 	try {
-		
+		const user = await User.findOne({ username: req.username })
+		.select("-password -refreshToken -otp -otpExpiryTime -_id  ")
+
+		if (!user) {
+			return res.status(401).json({
+				status: 400,
+				message: "bad request!",
+			});
+		}
+
+		return res.status(200).json({
+			status: 200,
+			message: "user found!",
+			data: user,
+		});
 	} catch (error) {
-		ApiError(res, 500, "internal server error")
+		return ApiError(res, 400, "Bad Request", error);
 	}
 };
 
@@ -211,4 +225,5 @@ export {
 	verifyOtpAndCreateUser,
 	loginUser,
 	logoutUser,
+	getUser,
 };
