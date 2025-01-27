@@ -14,9 +14,8 @@ const userSchema = mongoose.Schema(
 		},
 		username: {
 			type: String,
-			unique:true,
+			unique: true,
 			required: true,
-
 		},
 		password: {
 			type: String,
@@ -60,6 +59,12 @@ const userSchema = mongoose.Schema(
 			type: Date,
 			required: false,
 		},
+		resume: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Resume",
+			},
+		],
 	},
 	{ timestamps: true }
 );

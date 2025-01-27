@@ -1,14 +1,11 @@
 import express from "express";
 import "dotenv/config";
 import { connectDB } from "./database/connectDB.js";
-import { User } from "./models/user.model.js";
-import ApiError from "./utils/APIerror.js";
 import { userRouter } from "./routers/user.router.js";
-import { sendOtp } from "./services/emailOtp.service.js";
-import axios from "axios";
 import {youTubeRouter} from "./routers/youTube.router.js"
 import cookieParser from "cookie-parser";
 import { verifyToken } from "./middlewares/verifyToken.js";
+import {resumeRouter} from "./routers/resume.router.js"
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,6 +25,7 @@ connectDB(DB_URL);
 // using routes
 app.use("/app/api/user", userRouter);
 app.use("/app/user/youtube", youTubeRouter)
+app.use("/app/user/resume")
 
 // requests
 app.get("/", async (req, res) => {
