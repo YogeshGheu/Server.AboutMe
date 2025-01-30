@@ -4,10 +4,13 @@ import { sendForgotPasswordOtp, verifyForgotPasswordOtp } from "../utils/forgotP
 
 import { verifyToken } from "../middlewares/verifyToken.js";
 
+import { upload } from "../middlewares/multer.middleware.js";
+
 const userRouter = express.Router();
 
 
-userRouter.route("/data/collect").post(collectUserDataAndSendOtp);
+
+userRouter.route("/data/collect").post( upload.single("profilePicture"),collectUserDataAndSendOtp);
 userRouter.route("/verify/create").post(verifyOtpAndCreateUser);
 
 userRouter.route("/password/reset/request").post(sendForgotPasswordOtp);

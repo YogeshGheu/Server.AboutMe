@@ -6,6 +6,7 @@ import {youTubeRouter} from "./routers/youTube.router.js"
 import cookieParser from "cookie-parser";
 import { verifyToken } from "./middlewares/verifyToken.js";
 import {resumeRouter} from "./routers/resume.router.js"
+import bodyParser from "body-parser";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -25,7 +26,7 @@ connectDB(DB_URL);
 // using routes
 app.use("/app/api/user", userRouter);
 app.use("/app/user/youtube", youTubeRouter)
-app.use("/app/user/resume")
+app.use("/app/user/resume", resumeRouter)
 
 // requests
 app.get("/", async (req, res) => {

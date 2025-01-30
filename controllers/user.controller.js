@@ -1,5 +1,7 @@
 import { User } from "../models/user.model.js";
 import ApiError from "../utils/APIerror.js";
+import { uploadImage } from "../services/cloudinary.service.js";
+
 import {
 	generateRefreshToken,
 	generateAccessToken,
@@ -10,18 +12,22 @@ import { TempOTP } from "../models/tempOtp.model.js";
 import { sendOtp } from "../services/emailOtp.service.js";
 
 const collectUserDataAndSendOtp = async function (req, res) {
+
 	if (
 		!req.body.firstName ||
 		!req.body.lastName ||
 		!req.body.username ||
 		!req.body.password ||
 		!req.body.email ||
-		!req.body.phone
+		!req.body.phone ||
+		!req.file.path
 	) {
 		return ApiError(res, 400, "bad request - missing required fields");
 	}
 
+
 	const { firstName, lastName, username, password, email, phone } = req.body;
+	const profilePicture = req.file.path;
 
 	// check if the user already exists
 	try {
@@ -56,7 +62,7 @@ const collectUserDataAndSendOtp = async function (req, res) {
 		await TempOTP.create({
 			otp: OTP,
 			expiryTime: otpExpiryTime,
-			userData: { firstName, lastName, username, password, email, phone },
+			userData: { firstName, lastName, username, password, email, phone, profilePicture },
 		});
 		return res.status(200).json({
 			status: 200,
@@ -73,12 +79,16 @@ const collectUserDataAndSendOtp = async function (req, res) {
 };
 
 const verifyOtpAndCreateUser = async function (req, res) {
+
+
+	
 	const { otp } = req.body;
 	if (!otp) {
-		return ApiError(res, 400, "bad request - OTP object missing");
+		return ApiError(res, 400, "bad request - OTP missing");
 	}
 
 	let tempOTPData;
+
 
 	try {
 		tempOTPData = await TempOTP.findOne({
@@ -95,8 +105,17 @@ const verifyOtpAndCreateUser = async function (req, res) {
 		return ApiError(res, 500, "internal server error!", error);
 	}
 
-	const { firstName, lastName, username, password, email, phone } =
+
+	
+
+	const { firstName, lastName, username, password, email, phone, profilePicture } =
 		tempOTPData.userData;
+
+
+	const imageUploadResult = await uploadImage(profilePicture)
+		// .secure_url
+	if(!imageUploadResult) return ApiError(res, 500, "internal server error - failed to upload image")
+	
 
 	try {
 		const user = await User.create({
@@ -106,6 +125,7 @@ const verifyOtpAndCreateUser = async function (req, res) {
 			password,
 			email,
 			phone,
+			profilePicture: imageUploadResult.secure_url,
 			isActive: true,
 			isVerified: true,
 		});
