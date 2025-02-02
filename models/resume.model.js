@@ -9,6 +9,7 @@ const resumeSchema = mongoose.Schema(
 				lastName: "",
 				nickName: "",
 				age: "",
+				gender: "",
 				photo: "",
 			},
 		},
@@ -17,16 +18,16 @@ const resumeSchema = mongoose.Schema(
 			default: {
 				email: "",
 				phone: "",
-				address: "",
 				github: "",
 				linkedIn: "",
+				address: "",
 			},
 		},
 		jobProfile: {
 			type: Object,
 			default: {
 				jobTitle: "",
-				description: "",
+				jobDescription: "",
 			},
 		},
 		skills: {
@@ -36,6 +37,7 @@ const resumeSchema = mongoose.Schema(
 		education: {
 			type: [
 				{
+					educationId: { type: String, default: "" },
 					educationName: { type: String, default: "" },
 					college: { type: String, default: "" },
 					place: { type: String, default: "" },
@@ -49,6 +51,7 @@ const resumeSchema = mongoose.Schema(
 		certificates: {
 			type: [
 				{
+					certificateId:{ type: String, default: "" },
 					certificateName: { type: String, default: "" },
 					platform: { type: String, default: "" },
 					from: { type: String, default: "" },
@@ -60,31 +63,21 @@ const resumeSchema = mongoose.Schema(
 		languages: {
 			type: [
 				{
+					languageId:{ type: String, default: "" },
 					language: { type: String, default: "" },
 					proficiency: { type: String, default: "" },
 				},
 			],
 			default: [],
 		},
-		projects: {
-			type: [
-				{
-					projectName: { type: String, default: "" },
-					projectDescription: { type: String, default: "" },
-					from: { type: String, default: "" },
-					to: { type: String, default: "" },
-					skillsUsed: { type: [String], default: [] },
-				},
-			],
-			default: [],
-		},
+		
 		hobbies: {
-			type: [String], 
+			type: [String],
 			default: [],
 		},
 		createdBy: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "User", 
+			ref: "User",
 			required: true,
 		},
 	},
