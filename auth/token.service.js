@@ -26,7 +26,8 @@ const verifyRefreshToken = function (token) {
 		return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 	} catch (error) {
 		console.error("Error decoding the refresh token!", error.message);
-		throw new Error("Failed to verify the refresh token!");
+		// throw new Error("Failed to verify the refresh token!");
+		return null;
 	}
 };
 
@@ -54,6 +55,7 @@ const verifyAccessToken = function (token) {
 		return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 	} catch (error) {
 		console.error("Error decoding the access token!", error.message);
+		return null;
 	}
 };
 
