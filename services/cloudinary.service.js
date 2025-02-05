@@ -5,7 +5,7 @@ import fs from "fs/promises";
 // const __filename = import.meta.filename;
 import path from "path";
 
-const uploadImage = async function (imagePath) {
+const uploadImage = async function (imagePath, username) {
 	// Configuration
 	cloudinary.config({
 		cloud_name: "aboutme",
@@ -13,24 +13,23 @@ const uploadImage = async function (imagePath) {
 		api_secret: process.env.CLOUDINARY_API_SECRET,
 	});
 
-	// Upload the image and delete from server
-	const uploadResult = await cloudinary.uploader
-		.upload(imagePath, {
-			public_id: "profileImage",
-		})
-		.catch((error) => {
-			console.log(error);
-		});
-
-	// delete the file frm server
 	try {
+		await fs.access(imagePath);
+		const uploadResult = await cloudinary.uploader.upload(imagePath, {
+			public_id: `profileImage_${username}`,
+		});
+		// fs.rm(path.dirname(imagePath), {
+		// 	recursive: true,
+		// 	force: true,
+		// });
 		// await fs.unlink(imagePath);
-		await fs.rm(path.dirname(imagePath), { recursive: true, force: true });
+		return uploadResult;
 	} catch (error) {
-		console.log(error);
+		console.log("error uploading the image: ", error);
+		return null;
 	}
 
-	return uploadResult;
+	// return uploadResult;
 };
 
 export { uploadImage };
