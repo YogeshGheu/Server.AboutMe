@@ -51,7 +51,7 @@ const resumeSchema = mongoose.Schema(
 		certificates: {
 			type: [
 				{
-					certificateId:{ type: String, default: "" },
+					certificateId: { type: String, default: "" },
 					certificateName: { type: String, default: "" },
 					platform: { type: String, default: "" },
 					from: { type: String, default: "" },
@@ -63,14 +63,14 @@ const resumeSchema = mongoose.Schema(
 		languages: {
 			type: [
 				{
-					languageId:{ type: String, default: "" },
+					languageId: { type: String, default: "" },
 					language: { type: String, default: "" },
 					proficiency: { type: String, default: "" },
 				},
 			],
 			default: [],
 		},
-		
+
 		hobbies: {
 			type: [String],
 			default: [],
