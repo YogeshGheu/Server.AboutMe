@@ -215,7 +215,6 @@ const getContactDetails = async function (req, res) {
 		path: "resume",
 	});
 
-	console.log(user.resume[0].contactDetails);
 	if (!user) {
 		return res.json({
 			status: 404,
