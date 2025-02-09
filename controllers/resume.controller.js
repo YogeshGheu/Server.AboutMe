@@ -2,7 +2,7 @@ import { Resume } from "../models/resume.model.js";
 import { uploadImage } from "../services/cloudinary.service.js";
 import ApiError from "../utils/APIerror.js";
 import { User } from "../models/user.model.js";
-import fs from "fs"
+import fs from "fs";
 
 const addPersonalDetails = async function (req, res) {
 	if (
@@ -90,7 +90,7 @@ const getPersonalDetails = async (req, res) => {
 
 	if (user.resume.length == 0) {
 		return res.status(200).json({
-			status: 200,
+			status: 404,
 			message: "ok",
 			data: "no data found!",
 		});
@@ -103,6 +103,79 @@ const getPersonalDetails = async (req, res) => {
 	});
 };
 
+const addJobDetails = async (req, res) => {
+	
+	if (!req.username || !req.body.jobTitle || !req.body.jobDescription)
+		return ApiError(res, 400, "bad request !");
+
+	const { jobTitle, jobDescription } = req.body;
+
+	try {
+		const user = await User.findOne({ username: req.username });
+		let resume = await Resume.findOne({ _id: { $in: user.resume } });
+
+		if (!resume) {
+			const resume = await Resume.create({
+				jobProfile: {
+					jobTitle,
+					jobDescription,
+				},
+				createdBy: user._id,
+			});
+
+			user.resume.push(resume._id);
+			await user.save();
+		} else {
+			resume.jobProfile = {
+				jobTitle,
+				jobDescription,
+			};
+			await resume.save();
+		}
+		res.status(200).json({
+			status: 200,
+			message: "ok",
+		});
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 500, "internal server error");
+	}
+};
+
+const getJobDetails = async (req, res) => {
+	if (!req.username) return ApiError(res, 401, "unauthorized");
+	try {
+		const user = await User.findOne({ username: req.username }).populate({
+			path: "resume",
+		});
+
+		if (!user) return ApiError(res, 400, "bad request! is there ");
+
+		if (user.resume.length == 0) {
+			return res.status(200).json({
+				status: 404,
+				message: "ok",
+				data: "no data found!",
+			});
+		}
+
+		return res.status(200).json({
+			status: 200,
+			message: "ok",
+			data: user.resume[0].jobProfile,
+		});
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 500, "internal server error");
+	}
+};
+
 const addContactDetails = async function (req, res) {};
 
-export { addPersonalDetails, getPersonalDetails, addContactDetails };
+export {
+	addPersonalDetails,
+	getPersonalDetails,
+	addJobDetails,
+	getJobDetails,
+	addContactDetails,
+};
