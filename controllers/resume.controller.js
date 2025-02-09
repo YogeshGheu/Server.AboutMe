@@ -104,7 +104,6 @@ const getPersonalDetails = async (req, res) => {
 };
 
 const addJobDetails = async (req, res) => {
-	
 	if (!req.username || !req.body.jobTitle || !req.body.jobDescription)
 		return ApiError(res, 400, "bad request !");
 
@@ -170,7 +169,67 @@ const getJobDetails = async (req, res) => {
 	}
 };
 
-const addContactDetails = async function (req, res) {};
+const addContactDetails = async function (req, res) {
+	console.log(req.body);
+	if (!req.username) return ApiError(res, 401, "unauthorized");
+
+	if (
+		!req.body.contactDetails.email ||
+		!req.body.contactDetails.phone ||
+		!req.body.contactDetails.github ||
+		!req.body.contactDetails.linkedIn ||
+		!req.body.contactDetails.address
+	) {
+		return ApiError(res, 400, "bad request - parameters missing!");
+	}
+
+	try {
+		const user = await User.findOne({ username: req.username });
+		let resume = await Resume.findOne({ _id: { $in: user.resume } });
+
+		if (!resume) {
+			const resume = await Resume.create({
+				contactDetails: req.body.contactDetails,
+				createdBy: user._id,
+			});
+
+			user.resume.push(resume._id);
+			await user.save();
+		} else {
+			resume.contactDetails = req.body.contactDetails;
+			await resume.save();
+		}
+		res.status(200).json({
+			status: 200,
+			message: "ok",
+		});
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 500, "internal server error", error);
+	}
+};
+
+const getContactDetails = async function (req, res) {
+	if (!req.username) return ApiError(res, 401, "unauthorized access!");
+
+	const user = await User.findOne({ username: req.username }).populate({
+		path: "resume",
+	});
+
+	console.log(user.resume[0].contactDetails);
+	if (!user) {
+		return res.json({
+			status: 404,
+			message: "no data found",
+		});
+	}
+
+	return res.status(200).json({
+		status: 200,
+		message: "ok",
+		data: user.resume[0].contactDetails,
+	});
+};
 
 export {
 	addPersonalDetails,
@@ -178,4 +237,5 @@ export {
 	addJobDetails,
 	getJobDetails,
 	addContactDetails,
+	getContactDetails,
 };
