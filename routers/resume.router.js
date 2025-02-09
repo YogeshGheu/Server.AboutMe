@@ -5,7 +5,9 @@ import {
 	addPersonalDetails,
 	addContactDetails,
 	getPersonalDetails,
+	getContactDetails,
 } from "../controllers/resume.controller.js";
+
 import { verifyToken } from "../middlewares/verifyToken.js";
 
 import { upload } from "../middlewares/multer.middleware.js";
@@ -27,5 +29,6 @@ resumeRouter.route("/data/get/job-profile").post(getJobDetails);
 
 // add contach details
 resumeRouter.route("/data/add/contact-details").post(addContactDetails);
+resumeRouter.route("/data/get/contact-details").post(getContactDetails);
 
 export { resumeRouter };
