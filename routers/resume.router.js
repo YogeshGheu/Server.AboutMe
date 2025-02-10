@@ -14,6 +14,8 @@ import {
 	getLanguages,
 	addEducations,
 	getEducations,
+	addHobby,
+	getHobby,
 } from "../controllers/resume.controller.js";
 
 import { verifyToken } from "../middlewares/verifyToken.js";
@@ -52,7 +54,11 @@ resumeRouter.route("/data/add/languages").post(addLanguages);
 resumeRouter.route("/data/get/languages").post(getLanguages);
 
 // add and get educations
-resumeRouter.route("/data/add/educations").post(addEducations)
-resumeRouter.route("/data/get/educations").post(getEducations)
+resumeRouter.route("/data/add/educations").post(addEducations);
+resumeRouter.route("/data/get/educations").post(getEducations);
+
+// add and get hobbies
+resumeRouter.route("/data/add/hobby").post(addHobby);
+resumeRouter.route("/data/get/hobby").post(getHobby);
 
 export { resumeRouter };
