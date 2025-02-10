@@ -340,7 +340,6 @@ const getCertificates = async (req, res) => {
 };
 
 const addLanguages = async (req, res) => {
-	console.log(req.body);
 	if (!req.username) return ApiError(res, 401, "unauthorized access!");
 
 	try {
@@ -394,6 +393,59 @@ const getLanguages = async (req, res) => {
 	}
 };
 
+const addEducations = async (req, res) => {
+	if (!req.username) return ApiError(res, 401, "unauthorized access!");
+
+	try {
+		const user = await User.findOne({ username: req.username });
+		if (!user) return ApiError(res, 400, "bad request - no user found");
+
+		const resume = await Resume.findOne({ _id: { $in: user.resume } });
+
+		if (!resume) {
+			const resume = await Resume.create({
+				education: req.body,
+				createdBy: user._id,
+			});
+			user.resume.push(resume._id);
+			await resume.save();
+		} else {
+			resume.education = req.body;
+			await resume.save();
+		}
+		res.status(200).json({
+			status: 200,
+			message: "ok",
+		});
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 500, "internal server error", error);
+	}
+};
+const getEducations = async (req, res) => {
+	if (!req.username) return ApiError(res, 401, "unauthorized access!");
+	try {
+		const user = await User.findOne({ username: req.username }).populate({
+			path: "resume",
+		});
+		if (!user) {
+			return res.status(404).json({
+				status: 404,
+				message: "no data found!",
+			});
+		} else {
+			return res.status(200).json({
+				status: 200,
+				message: "ok",
+				data: user.resume[0].education,
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 400, "internal server error", error);
+	}
+};
+
 export {
 	addPersonalDetails,
 	getPersonalDetails,
@@ -407,4 +459,6 @@ export {
 	getCertificates,
 	addLanguages,
 	getLanguages,
+	addEducations,
+	getEducations,
 };
