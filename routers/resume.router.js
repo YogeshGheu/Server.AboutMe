@@ -12,6 +12,8 @@ import {
 	getCertificates,
 	addLanguages,
 	getLanguages,
+	addEducations,
+	getEducations,
 } from "../controllers/resume.controller.js";
 
 import { verifyToken } from "../middlewares/verifyToken.js";
@@ -48,5 +50,9 @@ resumeRouter.route("/data/get/certificates").post(getCertificates);
 // add and get languages
 resumeRouter.route("/data/add/languages").post(addLanguages);
 resumeRouter.route("/data/get/languages").post(getLanguages);
+
+// add and get educations
+resumeRouter.route("/data/add/educations").post(addEducations)
+resumeRouter.route("/data/get/educations").post(getEducations)
 
 export { resumeRouter };
