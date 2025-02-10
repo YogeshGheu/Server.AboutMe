@@ -446,6 +446,59 @@ const getEducations = async (req, res) => {
 	}
 };
 
+const addHobby = async (req, res) => {
+	if (!req.username) return ApiError(res, 401, "unauthorized access!");
+
+	try {
+		const user = await User.findOne({ username: req.username });
+		if (!user) return ApiError(res, 400, "bad request - no user found");
+
+		const resume = await Resume.findOne({ _id: { $in: user.resume } });
+
+		if (!resume) {
+			const resume = await Resume.create({
+				hobbies: req.body,
+				createdBy: user._id,
+			});
+			user.resume.push(resume._id);
+			await resume.save();
+		} else {
+			resume.hobbies = req.body;
+			await resume.save();
+		}
+		res.status(200).json({
+			status: 200,
+			message: "ok",
+		});
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 500, "internal server error", error);
+	}
+};
+const getHobby = async (req, res) => {
+	if (!req.username) return ApiError(res, 401, "unauthorized access!");
+	try {
+		const user = await User.findOne({ username: req.username }).populate({
+			path: "resume",
+		});
+		if (!user) {
+			return res.status(404).json({
+				status: 404,
+				message: "no data found!",
+			});
+		} else {
+			return res.status(200).json({
+				status: 200,
+				message: "ok",
+				data: user.resume[0].hobbies,
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 400, "internal server error", error);
+	}
+};
+
 export {
 	addPersonalDetails,
 	getPersonalDetails,
@@ -461,4 +514,6 @@ export {
 	getLanguages,
 	addEducations,
 	getEducations,
+	addHobby,
+	getHobby,
 };
