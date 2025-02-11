@@ -499,6 +499,25 @@ const getHobby = async (req, res) => {
 	}
 };
 
+const getAllData = async (req, res) => {
+	if (!req.username) return ApiError(res, 401, "unauthorized access!");
+	try {
+		const user = await User.findOne({ username: req.username });
+		if (!user) {
+			return ApiError(res, 404, "no data found");
+		} else {
+			return res.status(200).json({
+				status: 200,
+				message: "ok",
+				data: user.resume[0],
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		return ApiError(res, 500, "internal server error");
+	}
+};
+
 export {
 	addPersonalDetails,
 	getPersonalDetails,
@@ -516,4 +535,5 @@ export {
 	getEducations,
 	addHobby,
 	getHobby,
+	getAllData,
 };

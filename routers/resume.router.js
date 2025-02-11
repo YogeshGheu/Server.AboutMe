@@ -16,6 +16,7 @@ import {
 	getEducations,
 	addHobby,
 	getHobby,
+	getAllData,
 } from "../controllers/resume.controller.js";
 
 import { verifyToken } from "../middlewares/verifyToken.js";
@@ -60,5 +61,8 @@ resumeRouter.route("/data/get/educations").post(getEducations);
 // add and get hobbies
 resumeRouter.route("/data/add/hobby").post(addHobby);
 resumeRouter.route("/data/get/hobby").post(getHobby);
+
+// get complete resume data
+resumeRouter.route("/data/get/all").post(getAllData)
 
 export { resumeRouter };
