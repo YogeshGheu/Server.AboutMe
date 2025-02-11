@@ -3,6 +3,7 @@ import { uploadImage } from "../services/cloudinary.service.js";
 import ApiError from "../utils/APIerror.js";
 import { User } from "../models/user.model.js";
 import fs from "fs";
+import path from "path";
 
 const addPersonalDetails = async function (req, res) {
 	if (
@@ -502,7 +503,9 @@ const getHobby = async (req, res) => {
 const getAllData = async (req, res) => {
 	if (!req.username) return ApiError(res, 401, "unauthorized access!");
 	try {
-		const user = await User.findOne({ username: req.username });
+		const user = await User.findOne({ username: req.username }).populate({
+			path: "resume",
+		});
 		if (!user) {
 			return ApiError(res, 404, "no data found");
 		} else {
