@@ -501,9 +501,11 @@ const getHobby = async (req, res) => {
 };
 
 const getAllData = async (req, res) => {
-	if (!req.username) return ApiError(res, 401, "unauthorized access!");
+	if (!req.query.username) return ApiError(res, 400, "Bad Request - No username received");
 	try {
-		const user = await User.findOne({ username: req.username }).populate({
+		const user = await User.findOne({
+			username: req.query.username,
+		}).populate({
 			path: "resume",
 		});
 		if (!user) {
