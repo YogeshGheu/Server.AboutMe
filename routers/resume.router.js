@@ -24,6 +24,10 @@ import { verifyToken } from "../middlewares/verifyToken.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const resumeRouter = express.Router();
+
+// get complete resume data & can be used withour token verification
+resumeRouter.route("/data/get/all").get(getAllData);
+
 resumeRouter.use(verifyToken);
 
 // add personal data
@@ -61,8 +65,5 @@ resumeRouter.route("/data/get/educations").post(getEducations);
 // add and get hobbies
 resumeRouter.route("/data/add/hobby").post(addHobby);
 resumeRouter.route("/data/get/hobby").post(getHobby);
-
-// get complete resume data
-resumeRouter.route("/data/get/all").post(getAllData)
 
 export { resumeRouter };
