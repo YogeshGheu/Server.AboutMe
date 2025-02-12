@@ -12,7 +12,6 @@ import { TempOTP } from "../models/tempOtp.model.js";
 import { sendOtp } from "../services/emailOtp.service.js";
 
 const collectUserDataAndSendOtp = async function (req, res) {
-
 	if (
 		!req.body.firstName ||
 		!req.body.lastName ||
@@ -24,7 +23,6 @@ const collectUserDataAndSendOtp = async function (req, res) {
 	) {
 		return ApiError(res, 400, "bad request - missing required fields");
 	}
-
 
 	const { firstName, lastName, username, password, email, phone } = req.body;
 	const profilePicture = req.file.path;
@@ -62,7 +60,15 @@ const collectUserDataAndSendOtp = async function (req, res) {
 		await TempOTP.create({
 			otp: OTP,
 			expiryTime: otpExpiryTime,
-			userData: { firstName, lastName, username, password, email, phone, profilePicture },
+			userData: {
+				firstName,
+				lastName,
+				username,
+				password,
+				email,
+				phone,
+				profilePicture,
+			},
 		});
 		return res.status(200).json({
 			status: 200,
@@ -79,16 +85,12 @@ const collectUserDataAndSendOtp = async function (req, res) {
 };
 
 const verifyOtpAndCreateUser = async function (req, res) {
-
-
-	
 	const { otp } = req.body;
 	if (!otp) {
 		return ApiError(res, 400, "bad request - OTP missing");
 	}
 
 	let tempOTPData;
-
 
 	try {
 		tempOTPData = await TempOTP.findOne({
@@ -105,17 +107,24 @@ const verifyOtpAndCreateUser = async function (req, res) {
 		return ApiError(res, 500, "internal server error!", error);
 	}
 
+	const {
+		firstName,
+		lastName,
+		username,
+		password,
+		email,
+		phone,
+		profilePicture,
+	} = tempOTPData.userData;
 
-	
-
-	const { firstName, lastName, username, password, email, phone, profilePicture } =
-		tempOTPData.userData;
-
-
-	const imageUploadResult = await uploadImage(profilePicture)
-		// .secure_url
-	if(!imageUploadResult) return ApiError(res, 500, "internal server error - failed to upload image")
-	
+	const imageUploadResult = await uploadImage(profilePicture);
+	// .secure_url
+	if (!imageUploadResult)
+		return ApiError(
+			res,
+			500,
+			"internal server error - failed to upload image"
+		);
 
 	try {
 		const user = await User.create({
@@ -155,9 +164,7 @@ const loginUser = async function (req, res) {
 	const { username, password } = req.body;
 
 	try {
-		const user = await User.findOne({
-			username,
-		});
+		const user = await User.findOne({ username });
 
 		if (!user || !(await user.matchPassword(password))) {
 			return ApiError(res, 400, "bad request! - invalid credentials!");
@@ -181,6 +188,9 @@ const loginUser = async function (req, res) {
 		user.refreshToken = refreshToken;
 		await user.save();
 
+
+		const responseData = await User.findOne({username:user.username}).select("-password -__v -refreshToken -createdAt -updatedAt -resume")
+
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
 			maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
@@ -193,6 +203,7 @@ const loginUser = async function (req, res) {
 		return res.status(200).json({
 			status: 200,
 			message: "user is logged in",
+			data: responseData,
 		});
 	} catch (error) {
 		console.error("Unexpected error occurred: ", error.message);
@@ -215,13 +226,14 @@ const logoutUser = async function (req, res) {
 	res.status(200).json({
 		status: "ok",
 		message: "used logged out!",
-	}); 
+	});
 };
 
 const getUser = async (req, res) => {
 	try {
-		const user = await User.findOne({ username: req.username })
-		.select("-password -refreshToken -otp -otpExpiryTime -_id  ")
+		const user = await User.findOne({ username: req.username }).select(
+			"-password -refreshToken -otp -otpExpiryTime -_id  "
+		);
 
 		if (!user) {
 			return res.status(401).json({
